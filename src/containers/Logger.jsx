@@ -1,5 +1,5 @@
 import React, { useReducer, useMemo, useState, useEffect } from "react";
-import { Container, Box, CircularProgress } from "@mui/material";
+import { Container, Box } from "@mui/material";
 import dayjs from "dayjs";
 import {
   createSearchParams,
@@ -23,7 +23,7 @@ const {
   SAVE_FROM_PARAM,
 } = formActions;
 
-const url = "https://run.mocky.io/v3/a2fbc23e-069e-4ba5-954c-cd910986f40f";
+const url = process.env.REACT_APP_API_URL;
 
 const formInitialState = {
   logId: "",
