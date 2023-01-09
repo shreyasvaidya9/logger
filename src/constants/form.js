@@ -16,3 +16,5 @@ export const formLabels = {
   FROM_DATE: "From Date",
   TO_DATE: "To Date",
 };
+
+export const NOT_SELECTED = "Not Selected";

@@ -6,15 +6,7 @@ import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import { visuallyHidden } from "@mui/utils";
 
-const TableHeader = ({
-  onSelectAllClick,
-  order,
-  orderBy,
-  numSelected,
-  rowCount,
-  onRequestSort,
-  headerCells,
-}) => {
+const TableHeader = ({ order, orderBy, onRequestSort, headerCells }) => {
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -22,7 +14,7 @@ const TableHeader = ({
   return (
     <TableHead>
       <TableRow>
-        {headerCells.map(({ id, numeric, disablePadding, label }) => (
+        {headerCells.map(({ id, disablePadding, label }) => (
           <TableCell
             key={id}
             align="left"

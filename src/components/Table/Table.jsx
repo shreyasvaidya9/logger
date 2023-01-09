@@ -40,19 +40,21 @@ const TableComponent = ({ tableData }) => {
     setTableContent(tableContent);
   }, [tableData]);
 
+  // Update the current page to the first page when table content changes when filter is applied
+  useEffect(() => {
+    setPage(0);
+  }, [tableContent]);
+
+  // Handle the sort button click of any column
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
+  // handle the page change of the table
   const handleChangePage = (event, newPage) => {
     setPage(newPage - 1);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
   };
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -72,7 +74,6 @@ const TableComponent = ({ tableData }) => {
               order={order}
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
-              rowCount={tableContent.length}
               headerCells={headerCells}
             />
             <TableBody>
