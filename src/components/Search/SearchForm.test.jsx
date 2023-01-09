@@ -80,10 +80,10 @@ describe("Search Form", () => {
       screen.getByRole("textbox", { name: /to date/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("combobox", { name: /application type/i })
+      screen.getByRole("button", { name: /application type/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("combobox", { name: /action type/i })
+      screen.getByRole("button", { name: /action type/i })
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /search/i })).toBeInTheDocument();
   });
