@@ -19,6 +19,20 @@ export const descendingComparator = (a, b, orderBy) => {
   if (!b[orderBy]) {
     return -1;
   }
+
+  if (orderBy === CREATION_TIMESTAMP) {
+    const dateA = new Date(a[CREATION_TIMESTAMP]).getTime();
+    const dateB = new Date(b[CREATION_TIMESTAMP]).getTime();
+
+    if (dateB < dateA) {
+      return -1;
+    }
+    if (dateB > dateA) {
+      return 1;
+    }
+    return 0;
+  }
+
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
@@ -29,21 +43,6 @@ export const descendingComparator = (a, b, orderBy) => {
 };
 
 export const getComparator = (order, orderBy) => {
-  if (orderBy === CREATION_TIMESTAMP) {
-    return order === "desc"
-      ? (a, b) =>
-          descendingComparator(
-            new Date(a).setHours(0, 0, 0, 0),
-            new Date(b).setHours(0, 0, 0, 0),
-            orderBy
-          )
-      : (a, b) =>
-          -descendingComparator(
-            new Date(a).setHours(0, 0, 0, 0),
-            new Date(b).setHours(0, 0, 0, 0),
-            orderBy
-          );
-  }
   return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
@@ -79,7 +78,6 @@ export const getTableHeaders = (data) => {
           id: key,
           disablePadding: false,
           label: labelText,
-          numeric: key === APPLICATION_ID || key === LOG_ID ? true : false,
         });
         break;
       default:
