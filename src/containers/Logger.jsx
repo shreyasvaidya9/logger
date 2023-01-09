@@ -1,18 +1,14 @@
 import React, { useReducer, useMemo, useState, useEffect } from "react";
 import { Container, Box } from "@mui/material";
 import dayjs from "dayjs";
-import {
-  createSearchParams,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 
 import Loader from "../components/UI/Loader";
 import Table from "../components/Table";
 import SearchForm from "../components/Search";
 
-import { formActions } from "../constants/form";
+import { formActions, NOT_SELECTED } from "../constants/form";
 const {
   LOG_ID,
   ACTION_TYPE,
@@ -23,13 +19,13 @@ const {
   SAVE_FROM_PARAM,
 } = formActions;
 
-const url = "https://run.mocky.io/v3/a2fbc23e-069e-4ba5-954c-cd910986f40f";
+const url = process.env.REACT_APP_API_URL;
 
 const formInitialState = {
   logId: "",
   applicationId: "",
-  applicationType: null,
-  actionType: null,
+  applicationType: NOT_SELECTED,
+  actionType: NOT_SELECTED,
   fromDate: null,
   toDate: null,
 };
@@ -62,8 +58,7 @@ const Logger = () => {
   const [formData, dispatchForm] = useReducer(formReducer, formInitialState);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const navigate = useNavigate();
-  const [param] = useSearchParams();
+  const [param, setParam] = useSearchParams();
 
   const createParams = () => {
     const searchParams = {};
@@ -73,19 +68,20 @@ const Logger = () => {
         if (key === FROM_DATE || key === TO_DATE) {
           searchParams[key] = dayjs(formData[key]).format("YYYY-MM-DD");
         } else {
+          if (key === APPLICATION_TYPE || key === ACTION_TYPE) {
+            if (formData[key] === NOT_SELECTED) {
+              continue;
+            }
+          }
           searchParams[key] = formData[key];
         }
       }
     }
 
-    return createSearchParams(searchParams);
+    return searchParams;
   };
 
   const filteredData = useMemo(() => {
-    if (isSubmitted) {
-      createParams();
-    }
-
     const logId = param.get(LOG_ID) || "";
     const applicationId = param.get(APPLICATION_ID) || "";
     const applicationType = param.get(APPLICATION_TYPE) || "";
@@ -105,12 +101,12 @@ const Logger = () => {
           )
           .filter((tableData) =>
             applicationType
-              ? tableData.applicationType?.toString().includes(applicationType)
+              ? tableData.applicationType?.toString() === applicationType
               : tableData
           )
           .filter((tableData) =>
             actionType
-              ? tableData.actionType.toString().includes(actionType)
+              ? tableData.actionType.toString() === actionType
               : tableData
           )
           .filter((tableData) => {
@@ -139,7 +135,7 @@ const Logger = () => {
   useEffect(() => {
     if (isSubmitted) {
       setIsSubmitted(false);
-      navigate({ pathname: "/", search: createParams().toString() });
+      setParam(createParams());
     }
   }, [formData, isSubmitted]);
 
@@ -151,8 +147,8 @@ const Logger = () => {
           ...formInitialState,
           logId: param.get(LOG_ID) || "",
           applicationId: param.get(APPLICATION_ID) || "",
-          applicationType: param.get(APPLICATION_TYPE) || "",
-          actionType: param.get(ACTION_TYPE) || "",
+          applicationType: param.get(APPLICATION_TYPE) || NOT_SELECTED,
+          actionType: param.get(ACTION_TYPE) || NOT_SELECTED,
           fromDate: param.get(FROM_DATE) || null,
           toDate: param.get(TO_DATE) || null,
         },
@@ -171,6 +167,7 @@ const Logger = () => {
             dispatchForm={dispatchForm}
             filterSearch={() => setIsSubmitted(true)}
             tableData={filteredData.length ? filteredData : []}
+            data={data?.auditLog}
           />
           <Box sx={{ padding: "1rem" }}>
             <Table tableData={filteredData.length ? filteredData : []} />
