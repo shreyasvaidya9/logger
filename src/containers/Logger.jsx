@@ -1,6 +1,7 @@
 import React, { useReducer, useMemo, useState, useEffect } from "react";
 import { Container, Box } from "@mui/material";
 import dayjs from "dayjs";
+
 import { useSearchParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 
@@ -21,6 +22,7 @@ const {
 
 const url = process.env.REACT_APP_API_URL;
 
+// Initial Form Input Values
 const formInitialState = {
   logId: "",
   applicationId: "",
@@ -30,6 +32,7 @@ const formInitialState = {
   toDate: null,
 };
 
+// Reducer function to update the form
 const formReducer = (state, action) => {
   const { type, payload } = action;
 
@@ -60,6 +63,7 @@ const Logger = () => {
 
   const [param, setParam] = useSearchParams();
 
+  // Creating the Params object to change the url conditionally
   const createParams = () => {
     const searchParams = {};
 
@@ -81,6 +85,7 @@ const Logger = () => {
     return searchParams;
   };
 
+  // Create the filtered data for the table
   const filteredData = useMemo(() => {
     const logId = param.get(LOG_ID) || "";
     const applicationId = param.get(APPLICATION_ID) || "";
@@ -132,6 +137,7 @@ const Logger = () => {
       : [];
   }, [data, isSubmitted, param]);
 
+  // Change the url when the seatch button is clicked
   useEffect(() => {
     if (isSubmitted) {
       setIsSubmitted(false);
@@ -139,6 +145,7 @@ const Logger = () => {
     }
   }, [formData, isSubmitted]);
 
+  // Fill the form data when the url is changed
   useEffect(() => {
     if (!isSubmitted) {
       dispatchForm({
